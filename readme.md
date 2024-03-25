@@ -1,12 +1,12 @@
-# How to scrape Amazon using TypeScript, Cheerio and Crawlee
+# How to scrape Amazon using TypeScript, Cheerio, and Crawlee
 
 ## Introduction
 
-In this guide, we'll be extracting information from Amazon product pages using the power of [TypeScript](https://www.typescriptlang.org) in combination with the [Cheerio](https://cheerio.js.org) and [Crawlee](https://crawlee.dev) libraries. We'll explore how to retrieve and extract detailed product data such as titles, prices, image URLs, and more from Amazon's vast marketplace. We'll also discuss how to handle potential blocking issues that may arise during the scraping process.
+In this guide, we'll be extracting information from Amazon product pages using the power of [TypeScript](https://www.typescriptlang.org) in combination with the [Cheerio](https://cheerio.js.org) and [Crawlee](https://crawlee.dev) libraries. We'll explore how to retrieve and extract detailed product data such as titles, prices, image URLs, and more from Amazon's vast marketplace. We'll also discuss handling potential blocking issues that may arise during the scraping process.
 
 ## Prerequisites
 
-You will find the journey smoother if you have a decent grasp of the TypeScript language and a fundamental understanding of [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML)'s structure. A familiarity with Cheerio and Crawlee is advised, but not required, this guide is built to introduce these tools and their use cases in an approachable manner.
+You will find the journey smoother if you have a decent grasp of the TypeScript language and a fundamental understanding of [HTML](https://developer.mozilla.org/en-US/docs/Web/HTML) structure. A familiarity with Cheerio and Crawlee is advised but optional. This guide is built to introduce these tools and their use cases in an approachable manner.
 
 ## Writing the scraper
 
@@ -22,7 +22,7 @@ To begin with, let's identify the product fields that we're interested in scrapi
 
 ![Image highlighting the to be scraped product fields](images/fields-to-scrape.png)
 
-For now, our focus will be solely on the scraping part. We will shift our attention to Crawlee, our crawling tool, in a later section. Let's start!
+For now, our focus will be solely on the scraping part. In a later section, we will shift our attention to Crawlee, our crawling tool. Let's start!
 
 ### Scraping the individual data points
 
@@ -31,9 +31,9 @@ Our first step will be to utilize [browser DevTools](https://developer.mozilla.o
 For example, let's take a look at how we find the selector for the product title:
 ![Product title selector in DevTools](images/dev-tools-example.png)
 
-The product title selector we've deduced is `span#productTitle`. This selector targets all `span` elements with the id of `productTitle`. Lucky for us, there's only one such element on the page - exactly what we're after.
+The product title selector we've deduced is `span#productTitle`. This selector targets all `span` elements with the id of `productTitle`. Luckily, there's only one such element on the page - exactly what we're after.
 
-Using the same principle combined with a sprinkle of trial and error, we can find the selectors for the remaining data points. Next, let's write a function that uses a [Cheerio object](https://cheerio.js.org/docs/api/interfaces/CheerioAPI) of the product page as input and outputs our extracted data in a structured format.
+We can find the selectors for the remaining data points using the same principle combined with a sprinkle of trial and error. Next, let's write a function that uses a [Cheerio object](https://cheerio.js.org/docs/api/interfaces/CheerioAPI) of the product page as input and outputs our extracted data in a structured format.
 
 Initially, we'll focus on scraping simple data points, leaving the more complex ones, like image URLs and product attributes overview, for later.
 
@@ -76,9 +76,9 @@ export const extractProductDetails = ($: CheerioAPI): ProductDetails => {
 
 ## Improving the scraper
 
-At this point, our scraper extracts all fields as strings, which isn’t ideal for numerical fields like prices and review counts - we'd rather have those as numbers.
+At this point, our scraper extracts all fields as strings, which isn't ideal for numerical fields like prices and review counts - we'd rather have those as numbers.
 
-Simple casting from string to numbers won't work for all fields. In some cases such as processing the price fields, we need to clean the string and remove unnecessary characters before conversion. To address this, let's write a utility function that parses a number from a string. We’ll also have another function that will handle finding the first element matching our selector and return it parsed as a number.
+Simple casting from string to numbers will only work for some fields. In some cases, such as processing the price fields, we must clean the string and remove unnecessary characters before conversion. To address this, write a utility function parsing a number from a string. We'll also have another function to find the first element matching our selector and return it parsed as a number.
 
 ```typescript
 /**
@@ -131,7 +131,7 @@ export const extractProductDetails = ($: CheerioAPI): ProductDetails => {
 
 ### Scraping the advanced data points
 
-As we progress in our scraping journey, it's now time to focus on the more complex data fields like image URLs and product attributes overview. To extract data from these fields, we'll need to utilize the `map` function for iterating over all matching elements and fetching data from each of them. Let's start with image URLs.
+As we progress in our scraping journey, it's time to focus on the more complex data fields like image URLs and product attributes overview. To extract data from these fields, we must utilize the `map` function to iterate over all matching elements and fetch data from each. Let's start with image URLs.
 
 ```typescript
 const SELECTORS = {
@@ -152,7 +152,7 @@ const extractImageUrls = ($: CheerioAPI): string[] => {
 };
 ```
 
-Extracting images is relatively simple yet it still deserves a separate function for clarity. We'll now parse product attributes overview.
+Extracting images is relatively simple yet still deserves a separate function for clarity. We'll now parse the product attributes overview.
 
 ```typescript
 type ProductAttribute = {
@@ -273,7 +273,7 @@ Next up is the task of making the scraping part functional. Let's implement the 
 
 ## Crawling the product pages
 
-For crawling the product pages, we’ll utilize the features that Crawlee offers. It considerably simplifies web scraping with utilities like JSON file outputs, automatic scaling, and managing the request queue.
+We'll utilize the features that Crawlee offers to crawl the product pages. It considerably simplifies web scraping with utilities like JSON file outputs, automatic scaling, and request queue management.
 
 Our next stepping stone is to wrap our scraping logic within Crawlee, thereby implementing the crawling part of our process.
 
@@ -283,7 +283,7 @@ import { extractProductDetails } from './scraper.js';
 
 /**
  * Performs the logic of the crawler. It is called for each URL to crawl.
- * - Passed to the crawler in the `requestHandler` option.
+ * - Passed to the crawler using the `requestHandler` option.
  */
 const requestHandler = async (context: CheerioCrawlingContext) => {
     const { $, request } = context;
@@ -372,7 +372,7 @@ The code now successfully extracts the product details from the given URLs. We'v
 
 With a giant website like Amazon, one is bound to face some issues with blocking. Let's discuss how to handle them.
 
-Amazon frequently presents annoying CAPTCHAs or warning screens that may detect or block your scraper. We can counter this inconvenience by implementing a mechanism to detect and handle these blocks. As soon as we stumble upon one, we simply retry the request.
+Amazon frequently presents annoying CAPTCHAs or warning screens that may detect or block your scraper. We can counter this inconvenience by implementing a mechanism to detect and handle these blocks. As soon as we stumble upon one, we retry the request.
 
 ```typescript
 import { CheerioAPI } from 'cheerio';
@@ -406,11 +406,11 @@ const requestHandler = async (context: CheerioCrawlingContext) => {
 };
 ```
 
-While Crawlee's browser-like user-agent headers aid in preventing blocking to a certain extent, this isn't fully effective for a site as vast as Amazon.
+While Crawlee's browser-like user-agent headers prevent blocking to a certain extent, this is only partially effective for a site as vast as Amazon.
 
 ### Using proxies
 
-The use of proxies marks another significant tactic in evading blocking. You’ll be pleased to know that Crawlee excels in this domain, supporting both [custom proxies](https://crawlee.dev/docs/guides/proxy-management) and [Apify proxies](https://apify.com/proxy).
+The use of proxies marks another significant tactic in evading blocking. You'll be pleased to know that Crawlee excels in this domain, supporting both [custom proxies](https://crawlee.dev/docs/guides/proxy-management) and [Apify proxies](https://apify.com/proxy).
 
 Here's an example of how to use Apify's [residential proxies](https://docs.apify.com/platform/proxy/residential-proxy), which are highly effective in preventing blocking:
 
@@ -432,7 +432,7 @@ const crawler = new CheerioCrawler({ requestHandler, proxyConfiguration });
 
 For more advanced scraping, you can use a headless browser like [Playwright](https://crawlee.dev/docs/examples/playwright-crawler) to scrape Amazon. This method is more effective in preventing blocking and can handle websites with complex JavaScript interactions.
 
-To use Playwright with Crawlee, we can simply replace the `CheerioCrawler` with `PlaywrightCrawler`:
+To use Playwright with Crawlee, we can replace the `CheerioCrawler` with `PlaywrightCrawler`:
 
 ```typescript
 import { PlaywrightCrawler } from 'crawlee';
@@ -442,7 +442,7 @@ const crawler = new PlaywrightCrawler({ requestHandler, proxyConfiguration });
 ...
 ```
 
-And update our cheerio dependent code to work within Playwright:
+And update our Cheerio-dependent code to work within Playwright:
 
 ```typescript
 import { PlaywrightCrawlingContext } from 'crawlee';
@@ -459,4 +459,5 @@ const requestHandler = async (context: PlaywrightCrawlingContext) => {
 
 ## Conclusion
 
-You've now journeyed through the basic and advanced terrains of web scraping Amazon product pages using the powers of TypeScript, Cheerio, and Crawlee. It can seem like a lot to digest but don't worry! With more practice, each step will become more familiar and intuitive - until you become a web-scraping ninja. So go ahead and start experimenting. For more extensive web scraping abilities, check out pre-built scrapers from Apify, like the [Amazon Web Scraper](https://apify.com/junglee/amazon-crawler)! Happy scraping!
+You've now journeyed through the basic and advanced terrains of web scraping Amazon product pages using the powers of TypeScript, Cheerio, and Crawlee. It can seem like a lot to digest but don't worry! With more practice, each step will become more familiar and intuitive - until you become a web scraping ninja. So go ahead and start experimenting. For more extensive web scraping abilities, check out pre-built scrapers from Apify, like the [Amazon Web Scraper](https://apify.com/junglee/amazon-crawler)! Happy scraping!
+.
